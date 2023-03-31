@@ -10,3 +10,4 @@ maybe not clean code
 
 ### point_pillars:
 kitti perception result
+![image](https://github.com/DA-DA-Yang/auto-driving-tec/blob/main/data/kitti/boxes/000142.png)
