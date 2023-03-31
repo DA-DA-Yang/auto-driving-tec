@@ -1,0 +1,53 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "python": "${command:python.interpreterPath}",
+            "program": "${file}",
+            "args": [],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Debug",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceRoot}/build/ShowBoxes",
+            "args": [
+                "/ait_study/tmp/kitti-10/pcd/",
+                "/ait_study/tmp/kitti-10/boxes/"
+            ],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/build",
+            "externalConsole": false,
+            "MIMode": "gdb"
+        },
+        {
+            "name": "Pfe_Debug",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceRoot}/net/point_pillars/build/Pfe",
+            "args": ["/home/yangda/my_project/perception_lidar/tmp/kitti-1000/"],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/net/point_pillars/build",
+            "externalConsole": false,
+            "MIMode": "gdb"
+        },
+        {
+            "name": "Post_Debug",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceRoot}/net/point_pillars/build/Post",
+            "args": [
+                "/ait_study/tmp/kitti-15/pointcloud/"
+            ],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/net/point_pillars/build",
+            "externalConsole": false,
+            "MIMode": "gdb"
+        },
+    ]
+}
