@@ -15,10 +15,9 @@
             "name": "Debug",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceRoot}/build/ShowBoxes",
+            "program": "${workspaceRoot}/build/perception/NCutSegmentation/main",
             "args": [
-                "/ait_study/tmp/kitti-10/pcd/",
-                "/ait_study/tmp/kitti-10/boxes/"
+                "/ait_study/tmp/kitti-1/pointcloud/"
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/build",

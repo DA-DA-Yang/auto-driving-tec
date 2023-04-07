@@ -4,7 +4,7 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
-                "${workspaceFolder}/src",
+                "${workspaceFolder}",
                 "/usr/include/pcl-1.10",
                 "/usr/local/include/opencv4"
             ],

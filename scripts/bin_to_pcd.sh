@@ -5,4 +5,4 @@ if [ $# -lt 1 ]; then
   exit 1
 fi
 POINTCLOUD_PATH = $1
-/auto-driving-tec/build/BinToPcd $1
+/auto-driving-tec/build/tools/BinToPcd $1

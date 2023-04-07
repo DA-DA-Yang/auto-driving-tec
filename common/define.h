@@ -1,4 +1,5 @@
-#pragma once
+#ifndef DEFINE_H
+#define DEFINE_H
 
 #include <eigen3/Eigen/Core>
 #include <eigen3/Eigen/Eigen>
@@ -50,14 +51,14 @@ struct BOX_PCL
 };
 
 // 类别序号与类别名称的映射
-std::map<int, std::string> NUMBER_LABEL_MAP{
+static const std::map<int, std::string> NUMBER_LABEL_MAP{
     {0, std::string("Car")},
     {1, std::string("Pedestrian")},
     {2, std::string("Cyclist")},
     {3, std::string("VAN")}};
 
 // 类别与显示颜色的映射
-std::map<std::string, pcl::RGB> LABEL_COLOR_MAP{
+static const std::map<std::string, pcl::RGB> LABEL_COLOR_MAP{
     {std::string("Car"), pcl::RGB{255, 0, 0}},
     {std::string("Pedestrian"), pcl::RGB{0, 0, 255}},
     {std::string("Cyclist"), pcl::RGB{0, 255, 0}},
@@ -74,8 +75,17 @@ enum LABEL_TYPE
 
 struct PointXYZI
 {
-    float X;
-    float Y;
-    float Z;
-    float I;
+    float x;
+    float y;
+    float z;
+    float i;
 };
+
+struct PointXYZ
+{
+    float x;
+    float y;
+    float z;
+};
+
+#endif

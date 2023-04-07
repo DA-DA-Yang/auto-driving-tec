@@ -1,0 +1,14 @@
+#设置CMake最低版本号
+CMAKE_MINIMUM_REQUIRED(VERSION 3.19)
+#设置项目名称
+project(i_lib)
+
+set(ALGORITHM_DIR ${CMAKE_CURRENT_SOURCE_DIR}/algorithm)
+set(CORE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/core)
+set(DA_DIR ${CMAKE_CURRENT_SOURCE_DIR}/da)
+set(GEOMETRY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/geometry)
+set(PC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/pc)
+include_directories(${ALGORITHM_DIR} ${CORE_DIR} ${DA_DIR} ${GEOMETRY_DIR} ${PC_DIR})
+add_library(${PROJECT_NAME} SHARED ${PC_DIR}/i_ground.cc)
+#添加sse指令集支持
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse4.1")

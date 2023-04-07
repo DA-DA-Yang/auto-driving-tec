@@ -7,4 +7,4 @@ fi
 PCD_PATH=$1
 BOXES_PATH=$2
 
-/auto-driving-tec/build/ShowBoxes $PCD_PATH $BOXES_PATH
+/auto-driving-tec/build/tools/ShowBoxes $PCD_PATH $BOXES_PATH

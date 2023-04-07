@@ -9,7 +9,9 @@ fi
 source /home/yangda/anaconda3/bin/activate
 conda activate py310_pt120
 
-cd /auto-driving-tec/perception/point_pillars/build/
+cd /auto-driving-tec/build/perception/point_pillars/
 ./Pfe $1
-python ../inference.py --dirPath=$1
+cd /auto-driving-tec/perception/point_pillars/
+python inference.py --dirPath=$1
+cd /auto-driving-tec/build/perception/point_pillars/
 ./Post $1

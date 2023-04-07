@@ -9,7 +9,9 @@ fi
 source /home/yangda/anaconda3/bin/activate
 conda activate py310_pt120
 
-cd /auto-driving-tec/net/point_pillars/build/
+cd /auto-driving-tec/build/perception/autoware_point_pillars/
 ./Pfe_Autoware $1
-python ../rpn_autoware.py
+cd /auto-driving-tec/perception/autoware_point_pillars/
+python rpn_autoware.py
+cd /auto-driving-tec/build/perception/autoware_point_pillars/
 ./Post_Autoware $2
