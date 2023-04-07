@@ -17,7 +17,7 @@
             "request": "launch",
             "program": "${workspaceRoot}/build/perception/NCutSegmentation/main",
             "args": [
-                "/ait_study/tmp/kitti-1/pointcloud/"
+                "/auto-driving-tec/data/robosense16/pointcloud/"
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/build",

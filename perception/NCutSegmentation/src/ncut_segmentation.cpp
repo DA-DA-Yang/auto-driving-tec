@@ -107,7 +107,7 @@ void NCutSegmentation::getSegments(std::vector<PointXYZI> &pointcloud)
                 box.r = -angle_yaw;
                 box.n = 0;
                 box.label = NUMBER_LABEL_MAP.at(box.n);
-                box.color = LABEL_COLOR_MAP.at(box.label);
+                box.color = pcl::RGB{255, 255, 0};
                 boxes.push_back(box);
 
                 polygon.push_back(bbox_detector.getPolygon());
