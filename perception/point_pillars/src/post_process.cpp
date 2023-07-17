@@ -25,7 +25,7 @@ MatrixXf decode(const MatrixXf &boxes, const MatrixXf &anchors)
     out.col(5) = boxes.col(5).array().exp() * anchors.col(5).array();
 
     out.col(6) = boxes.col(6) + anchors.col(6);
-    out.col(2) = out.col(2) - out.col(5) / 2.0;
+    // out.col(2) = out.col(2) - out.col(5) / 2.0;
     return out;
 }
 

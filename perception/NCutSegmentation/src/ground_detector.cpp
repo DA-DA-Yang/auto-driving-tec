@@ -55,8 +55,8 @@ bool GroundDetector::detect(const PointXYZ &cloud_center, std::vector<PointXYZI>
     for (int i = 0; i < count_valid_point; ++i)
     {
         z_tmp = _ground_height_new[i];
-        PointXYZI &pt = pointcloud[i];
-        pt.z = z_tmp;
+        // PointXYZI &pt = pointcloud[i];
+        // pt.z = z_tmp;
         if (common::IAbs(z_tmp) > _ground_height_threshold)
         {
             non_ground_point_indices.push_back(i);

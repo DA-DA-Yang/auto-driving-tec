@@ -2,6 +2,7 @@
 #include "ncut.h"
 #include "ncut_segmentation.h"
 #include "base.h"
+#include "gflags/gflags.h"
 
 int main(int argc, char **argv)
 {
@@ -17,6 +18,8 @@ int main(int argc, char **argv)
     std::string in_dirPath(argv[1]);
     std::cout << "文件目录：" << argv[1] << std::endl;
     std::vector<boost::filesystem::path> stream = getFiles(in_dirPath, "bin");
+
+    google::SetCommandLineOption("flagfile", "/auto-driving-tec/perception/NCutSegmentation/conf/ncut.conf");
 
     // 对每帧点云进行处理
     for (auto ite = stream.begin(); ite != stream.end(); ++ite)

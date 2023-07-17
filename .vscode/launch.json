@@ -1,5 +1,5 @@
 {
-    "version": "0.2.0",
+    "version": "1.0.0",
     "configurations": [
         {
             "name": "Python: Current File",
@@ -12,41 +12,46 @@
             "justMyCode": true
         },
         {
-            "name": "Debug",
+            "name": "NCUT_Debug",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceRoot}/build/perception/NCutSegmentation/main",
+            "program": "${workspaceRoot}/build_debug/perception/NCutSegmentation/NcutSegmentation",
             "args": [
-                "/auto-driving-tec/data/robosense16/pointcloud/"
+                "/auto-driving-tec/data/ncut/bin"
             ],
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}/build",
+            "cwd": "${workspaceFolder}/build_debug",
             "externalConsole": false,
             "MIMode": "gdb"
         },
         {
-            "name": "Pfe_Debug",
+            "name": "LaneDetect_Debug",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceRoot}/net/point_pillars/build/Pfe",
-            "args": ["/home/yangda/my_project/perception_lidar/tmp/kitti-1000/"],
+            "program": "${workspaceRoot}/build_debug/perception/lane_detect/LaneDetector",
+            "args": [
+                "/auto-driving-tec/data/lane_detect/project_video.mp4"
+                //"/auto-driving-tec/data/lane_detect/frame_580.jpg"
+            ],
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}/net/point_pillars/build",
+            "cwd": "${workspaceFolder}/build_debug",
             "externalConsole": false,
             "MIMode": "gdb"
         },
         {
-            "name": "Post_Debug",
+            "name": "NDT_Debug",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceRoot}/net/point_pillars/build/Post",
+            "program": "${workspaceRoot}/build_debug/localization/ndt/ndt_omp_mapping",
             "args": [
-                "/ait_study/tmp/kitti-15/pointcloud/"
+                "workspace_dir==\"/auto-driving-tec/data/ndt_mapping/pcd\"",
+                "output_file==\"/auto-driving-tec/data/ndt_mapping/output.pcd\"",
             ],
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}/net/point_pillars/build",
+            "cwd": "${workspaceFolder}/build_debug",
             "externalConsole": false,
-            "MIMode": "gdb"
+            "MIMode": "gdb",
+            "miDebuggerArgs": "-q -ex quit; wait() { fg >/dev/null; }; /usr/bin/gdb -q --interpreter=mi",
         },
     ]
 }

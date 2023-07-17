@@ -304,8 +304,10 @@ void NCut::_normalizedCut(float ncut_threshold, bool use_classifier, std::vector
 
     while (!job_stack.empty())
     {
+        // 提取出堆栈中待处理的连通域
         curr = job_stack.top();
         job_stack.pop();
+
         std::string seg_label;
         if (curr->size() == 1)
         {
@@ -321,6 +323,7 @@ void NCut::_normalizedCut(float ncut_threshold, bool use_classifier, std::vector
         {
             std::vector<int> *seg1 = new std::vector<int>();
             std::vector<int> *seg2 = new std::vector<int>();
+
             // 提取连通域两两之间的权重系数
             Eigen::MatrixXf my_weights(curr->size(), curr->size());
             for (size_t i = 0; i < curr->size(); ++i)
@@ -333,10 +336,12 @@ void NCut::_normalizedCut(float ncut_threshold, bool use_classifier, std::vector
                 }
             }
 
+            // 把一个集合curr分成两个集合seg1与seg2，同时输出两个集合之间的ncut cost
             double cost = _getMinNcuts(my_weights, curr, seg1, seg2);
 
             if (cost > _ncut_threshold || 0 == seg1->size() || 0 == seg2->size())
             {
+                // 已经分割到最小了
                 std::vector<int> buffer;
                 for (size_t i = 0; i < curr->size(); ++i)
                 {
@@ -354,6 +359,7 @@ void NCut::_normalizedCut(float ncut_threshold, bool use_classifier, std::vector
                 }
                 if (buffer.size() > 0)
                 {
+                    // 保存最小分割后的连通域及其标签
                     segment_clusters.push_back(buffer);
                     segment_labels.push_back("unknown");
                 }
@@ -362,6 +368,7 @@ void NCut::_normalizedCut(float ncut_threshold, bool use_classifier, std::vector
             }
             else
             {
+                // 还可以继续分割的，就放入堆栈中
                 job_stack.push(seg1);
                 job_stack.push(seg2);
             }
@@ -460,6 +467,7 @@ float NCut::_getMinNcuts(const Eigen::MatrixXf &in_weights,
     const int num_clusters = static_cast<int>(in_weights.rows());
     seg1->resize(num_clusters);
     seg2->resize(num_clusters);
+
     // .1 eigen decompostion
     Eigen::MatrixXf eigenvectors;
     _laplacianDecomposition(in_weights, &eigenvectors);

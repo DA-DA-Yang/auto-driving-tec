@@ -3,10 +3,6 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.19)
 #设置项目名称
 project(point_pillars)
 
-#设置Debug或者Release编译
-set(CMAKE_BUILD_TYPE "Debug")
-#set(CMAKE_BUILD_TYPE "Release")
-
 #boost
 find_package(Boost REQUIRED COMPONENTS thread)
 INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})

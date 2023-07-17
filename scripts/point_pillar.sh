@@ -6,8 +6,8 @@ if [ $# -lt 1 ]; then
 fi
 
 #在shell中调用conda命令
-source /home/yangda/anaconda3/bin/activate
-conda activate py310_pt120
+source /home/dayang/anaconda3/bin/activate
+conda activate py310_pt1120
 
 cd /auto-driving-tec/build/perception/point_pillars/
 ./Pfe $1

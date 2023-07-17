@@ -81,4 +81,7 @@ int main(int argc, char **argv)
     std::string out_file = pcd_dirPath + (*ite).stem().string() + ".pcd";
     bin2pcd((*ite).string(), out_file);
   }
+  std::cout << "================" << std::endl
+            << "[Done] OK!" << std::endl
+            << "================" << std::endl;
 }

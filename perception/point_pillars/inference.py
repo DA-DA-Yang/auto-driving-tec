@@ -17,7 +17,7 @@ parser.add_argument('--dirPath', type=str, default=None)
 args = parser.parse_args()
 
 in_dirPath = args.dirPath
-model_path = "/ait_study/perception/point_pillars/model/pointPillar.onnx"
+model_path = "/auto-driving-tec/perception/point_pillars/model/pointPillar.onnx"
 
 str_t = in_dirPath[::-1]
 str_t = str_t.split("/", 2)[2]

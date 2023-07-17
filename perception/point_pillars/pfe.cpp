@@ -9,7 +9,7 @@
 int main(int argc, char **argv)
 {
     printf("\n");
-    printf("\n>>>----------pre process----------<<<\n");
+    printf("\n>========pre process========\n");
     //该程序用于执行点云pillar化。
     if (argc <= 1)
     {

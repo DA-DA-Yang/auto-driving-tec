@@ -3,10 +3,6 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.19)
 #设置项目名称
 project(autoware_pointpillars)
 
-#设置Debug或者Release编译
-set(CMAKE_BUILD_TYPE "Debug")
-#set(CMAKE_BUILD_TYPE "Release")
-
 #point_pillar src
 set(POINTPILLARS_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../point_pillars/src)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../point_pillars/src)

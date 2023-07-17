@@ -23,11 +23,14 @@ private:
     pcl::visualization::PCLVisualizer::Ptr _pcl_viewer;
     pcl::PointCloud<pcl::PointXYZI>::Ptr _point_cloud_ptr;
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr _rgb_cloud_ptr;
-    std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> _polygon; 
+    std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> _polygon;
+    std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> _polygon_maxZ;
     void visualizePointCloud(const std::vector<PointXYZI> &pointcloud);
     void visualizeSegments(const std::vector<PointXYZI> &pointcloud, const std::vector<std::vector<int>>& point_index_in_segments);
     void visualizePolygon(const std::vector<PointXYZI> &pointcloud, const std::vector<std::vector<PointXYZ>> &polygon);
+    void visualizePolygon(const std::vector<PointXYZI> &pointcloud, const std::vector<std::vector<PointXYZ>> &polygon_minZ,const std::vector<std::vector<PointXYZ>> &polygon_maxZ);
     void visualizeBboxes(const std::vector<PointXYZI> &pointcloud, const std::vector<BOX_PCL> &bboxes);
+    void visualizePolygonAndBboxes(const std::vector<PointXYZI> &pointcloud, const std::vector<std::vector<PointXYZ>> &polygon,const std::vector<BOX_PCL> &bboxes);
 
 #endif
 };

@@ -8,6 +8,13 @@ find_package(Boost REQUIRED COMPONENTS thread)
 INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
 link_directories(${Boost_LIBRARY_DIRS})
 
+find_package (gflags REQUIRED)
+#common
+set(NCUT_COMMON_DIR ${CMAKE_CURRENT_SOURCE_DIR}/common)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/common)
+aux_source_directory(${NCUT_COMMON_DIR} COMMON)
+add_library(ncut_flags SHARED ${NCUT_COMMON_DIR}/ncut_flags.cc)
+
 #pcl
 find_package(PCL REQUIRED)
 include_directories(${PCL_INCLUDE_DIRS})
@@ -29,9 +36,9 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
 aux_source_directory(${SRC_DIR} SRC)
 
 #main
-add_executable(main ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp ${SRC} ${COMMON})
-target_include_directories(main PRIVATE SRC_DIR COMMON_DIR)
-target_link_libraries(main i_lib bbox ${PCL_LIBRARIES} ${Boost_THREAD_LIBRARY} ${OpenCV_LIBS})
+add_executable(NcutSegmentation ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp ${SRC} ${COMMON})
+target_include_directories(NcutSegmentation PRIVATE SRC_DIR COMMON_DIR)
+target_link_libraries(NcutSegmentation i_lib bbox ${PCL_LIBRARIES} ${Boost_THREAD_LIBRARY} ${OpenCV_LIBS} gflags ncut_flags)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_definitions(-DDEBUG)

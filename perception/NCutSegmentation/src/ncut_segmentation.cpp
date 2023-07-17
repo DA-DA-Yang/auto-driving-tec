@@ -1,4 +1,5 @@
 #include "ncut_segmentation.h"
+#include "perception/NCutSegmentation/common/ncut_flags.h"
 
 NCutSegmentation::NCutSegmentation(/* args */)
 {
@@ -45,7 +46,7 @@ void NCutSegmentation::getSegments(std::vector<PointXYZI> &pointcloud)
     #endif
 
     float grid_radius=80.f;
-    float cell_size = 1.f;
+    float cell_size = FLAGS_large_cut_size;
     // 执行floodfill
     FloodFill ff(grid_radius, cell_size);
     std::vector<std::vector<int>> point_index_in_segments;
@@ -59,6 +60,7 @@ void NCutSegmentation::getSegments(std::vector<PointXYZI> &pointcloud)
 
     // 执行ncut
     std::vector<std::vector<PointXYZ>> polygon;
+    std::vector<std::vector<PointXYZ>> polygon_maxZ;
     std::vector<BOX_PCL> boxes;
     NCut ncut;
     int num_ff_segments = static_cast<int>(point_index_in_segments.size());
@@ -75,7 +77,7 @@ void NCutSegmentation::getSegments(std::vector<PointXYZI> &pointcloud)
         ncut.segments(&pc_segment);
         // 获取分割结果
         // #ifdef DEBUG
-        // visualizeSegments(pc_segment, ncut.getPointIndicesInSegments());
+        //         visualizeSegments(pc_segment, ncut.getPointIndicesInSegments());
         // #endif
         // 对经过ncut处理的每一个连通域，进行检测框计算
         int num_ncut_segments = ncut.getNumSegments();
@@ -104,13 +106,19 @@ void NCutSegmentation::getSegments(std::vector<PointXYZI> &pointcloud)
                 box.l = box_size(0);
                 box.w = box_size(1);
                 box.h = box_size(2);
-                box.r = -angle_yaw;
+                box.r = angle_yaw;
                 box.n = 0;
                 box.label = NUMBER_LABEL_MAP.at(box.n);
                 box.color = pcl::RGB{255, 255, 0};
                 boxes.push_back(box);
 
                 polygon.push_back(bbox_detector.getPolygon());
+                polygon_maxZ.push_back(bbox_detector.getPolygon());
+                int np = static_cast<int>(polygon_maxZ.back().size());
+                for (int i = 0; i < np; ++i)
+                {
+                    polygon_maxZ.back()[i].z += box.h;
+                }
             }
             // #ifdef DEBUG
             // std::vector<BOX_PCL> boxes_tmp;
@@ -125,10 +133,9 @@ void NCutSegmentation::getSegments(std::vector<PointXYZI> &pointcloud)
     }
     #ifdef DEBUG
     std::cout << "Num of bboxes: " << boxes.size() << std::endl;
-    visualizeBboxes(pc_non_ground, boxes);
-    std::cout << "Num of polygon: " << polygon.size() << std::endl;
-    visualizePolygon(pc_non_ground, polygon);
-    #endif
+    visualizePolygon(pointcloud, polygon, polygon_maxZ);
+    visualizePolygonAndBboxes(pointcloud, polygon, boxes);
+#endif
 }
 
 #ifdef DEBUG
@@ -211,8 +218,7 @@ void NCutSegmentation::visualizePolygon(const std::vector<PointXYZI> &pointcloud
     pcl::visualization::PointCloudColorHandlerGenericField<pcl::PointXYZI> field_color(_point_cloud_ptr, "intensity");
     _pcl_viewer->addPointCloud<pcl::PointXYZI>(_point_cloud_ptr, field_color, "point cloud");
 
-     //===添加polygon============================================
-    _pcl_viewer->removeAllShapes();
+    //===添加polygon============================================
     int num_polygon = static_cast<int>(polygon.size());
     _polygon.clear();
     _polygon.resize(num_polygon);
@@ -231,6 +237,65 @@ void NCutSegmentation::visualizePolygon(const std::vector<PointXYZI> &pointcloud
             _polygon[i]->push_back(pt);
          }
         _pcl_viewer->addPolygon<pcl::PointXYZ>(_polygon[i],255,255,0, std::to_string(i)); // 显示为黄色
+    }
+    _pcl_viewer->spin();
+}
+
+void NCutSegmentation::visualizePolygon(const std::vector<PointXYZI> &pointcloud, const std::vector<std::vector<PointXYZ>> &polygon_minZ, const std::vector<std::vector<PointXYZ>> &polygon_maxZ)
+{
+    if (polygon_minZ.size() != polygon_maxZ.size())
+        return;
+    // pointcloud: 点云
+    // polygon: 包围区域的多边形凸点
+    _pcl_viewer->removeAllPointClouds(0);
+    _pcl_viewer->removeAllShapes(0);
+    _point_cloud_ptr->clear();
+
+    int num_points = static_cast<int>(pointcloud.size());
+    for (int i = 0; i < num_points; ++i)
+    {
+        pcl::PointXYZI pt;
+        pt.x = pointcloud[i].x;
+        pt.y = pointcloud[i].y;
+        pt.z = pointcloud[i].z;
+        pt.intensity = pointcloud[i].i;
+        _point_cloud_ptr->push_back(pt);
+    }
+    // 按"intensity"着色
+    pcl::visualization::PointCloudColorHandlerGenericField<pcl::PointXYZI> field_color(_point_cloud_ptr, "intensity");
+    _pcl_viewer->addPointCloud<pcl::PointXYZI>(_point_cloud_ptr, field_color, "point cloud");
+
+    //===添加polygon============================================
+    int num_polygon = static_cast<int>(polygon_minZ.size());
+    _polygon.clear();
+    _polygon.resize(num_polygon);
+    _polygon_maxZ.clear();
+    _polygon_maxZ.resize(num_polygon);
+    int count = 0;
+    for (int i = 0; i < num_polygon; ++i)
+    {
+        _polygon[i] = pcl::PointCloud<pcl::PointXYZ>::Ptr(new pcl::PointCloud<pcl::PointXYZ>);
+        _polygon_maxZ[i] = pcl::PointCloud<pcl::PointXYZ>::Ptr(new pcl::PointCloud<pcl::PointXYZ>);
+        int num_points_in_polygon = static_cast<int>(polygon_minZ[i].size());
+        _polygon[i]->reserve(num_points_in_polygon);
+        _polygon_maxZ[i]->reserve(num_points_in_polygon);
+        for (int j = 0; j < num_points_in_polygon; ++j)
+        {
+            pcl::PointXYZ pt;
+            pt.x = polygon_minZ[i][j].x;
+            pt.y = polygon_minZ[i][j].y;
+            pt.z = polygon_minZ[i][j].z;
+            _polygon[i]->push_back(pt);
+            pcl::PointXYZ pt_maxZ;
+            pt_maxZ.x = polygon_maxZ[i][j].x;
+            pt_maxZ.y = polygon_maxZ[i][j].y;
+            pt_maxZ.z = polygon_maxZ[i][j].z;
+            _polygon_maxZ[i]->push_back(pt_maxZ);
+            _pcl_viewer->addLine<pcl::PointXYZ, pcl::PointXYZ>(_polygon[i]->at(j), _polygon_maxZ[i]->at(j), 255, 255, 0, "line" + std::to_string(count));
+            count++;
+        }
+        _pcl_viewer->addPolygon<pcl::PointXYZ>(_polygon[i], 255, 255, 0, "polygon" + std::to_string(i));          // 显示为黄色
+        _pcl_viewer->addPolygon<pcl::PointXYZ>(_polygon_maxZ[i], 255, 255, 0, "polygon_max" + std::to_string(i)); // 显示为黄色
     }
     _pcl_viewer->spin();
 }
@@ -259,17 +324,79 @@ void NCutSegmentation::visualizeBboxes(const std::vector<PointXYZI> &pointcloud,
     _pcl_viewer->addPointCloud<pcl::PointXYZI>(_point_cloud_ptr, field_color, "point cloud");
 
     //===添加3D-boxes============================================
-    _pcl_viewer->removeAllShapes();
     int num_bboxes = static_cast<int>(bboxes.size());
 
     for (int idx = 0; idx < num_bboxes; idx++)
     {
         // 绕z轴旋转的角度调整
-        Eigen::AngleAxisf rotation_vector(-bboxes[idx].r, Eigen::Vector3f(0, 0, 1));
+        Eigen::AngleAxisf rotation_vector(bboxes[idx].r, Eigen::Vector3f(0, 0, 1));
         // 绘制对象检测框，参数为三维坐标，长宽高还有旋转角度以及长方体名称
         std::string label_name = bboxes[idx].label + "-" + std::to_string(idx);
         _pcl_viewer->addCube(Eigen::Vector3f(bboxes[idx].x, bboxes[idx].y, bboxes[idx].z),
-                        Eigen::Quaternionf(rotation_vector), bboxes[idx].l, bboxes[idx].w, bboxes[idx].h, label_name);
+                             Eigen::Quaternionf(rotation_vector), bboxes[idx].l, bboxes[idx].w, bboxes[idx].h, label_name);
+        // 设置检测框只有骨架
+        _pcl_viewer->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_REPRESENTATION, pcl::visualization::PCL_VISUALIZER_REPRESENTATION_WIREFRAME, label_name);
+        // 设置检测框的颜色属性
+        _pcl_viewer->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, bboxes[idx].color.r, bboxes[idx].color.g, bboxes[idx].color.b, label_name);
+    }
+    _pcl_viewer->spin();
+}
+
+void NCutSegmentation::visualizePolygonAndBboxes(const std::vector<PointXYZI> &pointcloud, const std::vector<std::vector<PointXYZ>> &polygon, const std::vector<BOX_PCL> &bboxes)
+{
+    // pointcloud: 点云
+    // bboxes: 每个连通域中的bbox
+
+    _pcl_viewer->removeAllPointClouds(0);
+    _pcl_viewer->removeAllShapes(0);
+    _point_cloud_ptr->clear();
+
+    int num_points = static_cast<int>(pointcloud.size());
+    for (int i = 0; i < num_points; ++i)
+    {
+        pcl::PointXYZI pt;
+        pt.x = pointcloud[i].x;
+        pt.y = pointcloud[i].y;
+        pt.z = pointcloud[i].z;
+        pt.intensity = pointcloud[i].i;
+        _point_cloud_ptr->push_back(pt);
+    }
+    // 按"intensity"着色
+    pcl::visualization::PointCloudColorHandlerGenericField<pcl::PointXYZI> field_color(_point_cloud_ptr, "intensity");
+    _pcl_viewer->addPointCloud<pcl::PointXYZI>(_point_cloud_ptr, field_color, "point cloud");
+
+    //===添加polygon============================================
+    int num_polygon = static_cast<int>(polygon.size());
+    _polygon.clear();
+    _polygon.resize(num_polygon);
+
+    for (int i = 0; i < num_polygon; i++)
+    {
+        _polygon[i] = pcl::PointCloud<pcl::PointXYZ>::Ptr(new pcl::PointCloud<pcl::PointXYZ>);
+        int num_points_in_polygon = static_cast<int>(polygon[i].size());
+        _polygon[i]->reserve(num_points_in_polygon);
+        for (int j = 0; j < num_points_in_polygon; ++j)
+        {
+            pcl::PointXYZ pt;
+            pt.x = polygon[i][j].x;
+            pt.y = polygon[i][j].y;
+            pt.z = polygon[i][j].z;
+            _polygon[i]->push_back(pt);
+        }
+        _pcl_viewer->addPolygon<pcl::PointXYZ>(_polygon[i], 255, 255, 0, std::to_string(i)); // 显示为黄色
+    }
+
+    //===添加3D-boxes============================================
+    int num_bboxes = static_cast<int>(bboxes.size());
+
+    for (int idx = 0; idx < num_bboxes; idx++)
+    {
+        // 绕z轴旋转的角度调整
+        Eigen::AngleAxisf rotation_vector(bboxes[idx].r, Eigen::Vector3f(0, 0, 1));
+        // 绘制对象检测框，参数为三维坐标，长宽高还有旋转角度以及长方体名称
+        std::string label_name = bboxes[idx].label + "-" + std::to_string(idx);
+        _pcl_viewer->addCube(Eigen::Vector3f(bboxes[idx].x, bboxes[idx].y, bboxes[idx].z),
+                             Eigen::Quaternionf(rotation_vector), bboxes[idx].l, bboxes[idx].w, bboxes[idx].h, label_name);
         // 设置检测框只有骨架
         _pcl_viewer->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_REPRESENTATION, pcl::visualization::PCL_VISUALIZER_REPRESENTATION_WIREFRAME, label_name);
         // 设置检测框的颜色属性

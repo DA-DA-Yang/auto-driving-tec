@@ -64,7 +64,13 @@
         "condition_variable": "cpp",
         "random": "cpp",
         "core": "cpp",
-        "dense": "cpp"
+        "dense": "cpp",
+        "numericaldiff": "cpp"
+    },
+    "editor.quickSuggestions": {
+        "other": true,
+        "comments": true,
+        "strings": true
     },
     "cmake.configureOnOpen": false,
     "git.ignoreLimitWarning": true
